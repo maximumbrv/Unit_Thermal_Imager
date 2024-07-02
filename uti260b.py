@@ -18,7 +18,7 @@ class Uti260b:
             else:
                 try:
                     self.camera = cv2.VideoCapture(self.camera_id)
-                except Exception:
+                except cv2.error:
                     print(f"Couldn't connect to camera #{self.camera_id}")
                 else:
                     success = True
