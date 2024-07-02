@@ -76,6 +76,12 @@ class Uti260b:
             return True
         return False
 
+    def is_found(self):
+        return self.camera_id is not None
+
+    def is_connected(self):
+        return self.camera is not None
+
     @staticmethod
     def get_available_cameras():
         devices = FilterGraph().get_input_devices()
@@ -88,6 +94,8 @@ class Uti260b:
 if __name__ == "__main__":
     cam = Uti260b()
     cam.find_camera()
-    cam.connect()
-    cam.preview()
+    if cam.is_found():
+        cam.connect()
+    if cam.is_connected():
+        cam.preview()
     cam.disconnect()
