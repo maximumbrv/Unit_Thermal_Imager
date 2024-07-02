@@ -63,7 +63,6 @@ class Uti260b:
 
         for index, name in available_cameras.items():
             if name == "UVC Camera":
-                print(f'check camera #{index}: {name}')
                 camera = cv2.VideoCapture(index)
                 if camera.isOpened():
                     status, frame = camera.read()
