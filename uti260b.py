@@ -1,6 +1,4 @@
-import numpy as np
 import cv2
-import pytesseract
 import time
 from pygrabber.dshow_graph import FilterGraph
 
@@ -39,6 +37,8 @@ class Uti260b:
             rval = True
         else:
             rval = self._camera.release()
+            self._camera = None
+            self._camera_id = None
         return rval
 
     def preview(self):
@@ -87,6 +87,16 @@ class Uti260b:
                 writer.write(frame)
 
         cv2.destroyWindow("preview")
+
+    def snap(self):
+        if self.is_connected():
+            status, frame = self._camera.read()
+            if not status:
+                return None
+            else:
+                return frame
+        else:
+            return None
 
     def find_camera(self):
         camera_found = False
