@@ -1,7 +1,12 @@
 import numpy as np
 import cv2
 import pytesseract
+import time
 from pygrabber.dshow_graph import FilterGraph
+
+FRAME_DELAY = 10
+VIDEO_FPS = 20
+RESOLUTION = (321, 240)
 
 
 class Uti260b:
@@ -43,17 +48,40 @@ class Uti260b:
 
         if self.camera.isOpened():
             rval, frame = self.camera.read()
-            print(frame.shape)
         else:
             rval = False
             print("Couldn't read from camera")
+        recording = False
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        writer = None
 
         while rval:
             cv2.imshow("preview", frame)
             rval, frame = self.camera.read()
-            key = cv2.waitKey(10)
+            key = cv2.waitKey(FRAME_DELAY)
             if key == 27:  # exit on ESC
                 break
+            if key in [ord('c'), ord('C'), ord('с'), ord('С')]:
+                current_time = time.strftime("%d%m%Y-%H%M%S")
+                image_name = "img\\" + current_time + ".bmp"
+                cv2.imwrite(image_name, frame)
+                print('Image captured')
+            if key in [ord('r'), ord('R'), ord('к'), ord('К')]:
+                if not recording:
+                    current_time = time.strftime("%d%m%Y-%H%M%S")
+                    video_name = "video\\" + current_time + ".avi"
+                    writer = cv2.VideoWriter(video_name, fourcc, VIDEO_FPS, RESOLUTION[::-1])
+                    recording = True
+                    print('Recording started')
+                elif writer is None:
+                    print('Recording not started')
+                else:
+                    recording = False
+                    writer.release()
+                    print('Recording stopped')
+
+            if recording:
+                writer.write(frame)
 
         cv2.destroyWindow("preview")
 
@@ -66,7 +94,7 @@ class Uti260b:
                 camera = cv2.VideoCapture(index)
                 if camera.isOpened():
                     status, frame = camera.read()
-                    if status and frame.shape[:2] == (321, 240):
+                    if status and frame.shape[:2] == RESOLUTION:
                         camera_found = True
                         self.camera_id = index
                     camera.release()
@@ -93,8 +121,7 @@ class Uti260b:
 if __name__ == "__main__":
     cam = Uti260b()
     cam.find_camera()
-    if cam.is_found():
-        cam.connect()
+    cam.connect()
     if cam.is_connected():
         cam.preview()
     cam.disconnect()
