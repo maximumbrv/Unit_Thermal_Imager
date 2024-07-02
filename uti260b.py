@@ -4,8 +4,8 @@ import pytesseract
 import time
 from pygrabber.dshow_graph import FilterGraph
 
-FRAME_DELAY = 10
-VIDEO_FPS = 20
+FRAME_DELAY = 40
+VIDEO_FPS = 15
 RESOLUTION = (321, 240)
 
 
@@ -52,7 +52,7 @@ class Uti260b:
             rval = False
             print("Couldn't read from camera")
         recording = False
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         writer = None
 
         while rval:
