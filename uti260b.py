@@ -35,12 +35,12 @@ class Uti260b:
 
     def disconnect(self):
         if self._camera is None:
-            rval = True
+            status = True
         else:
-            rval = self._camera.release()
+            status = self._camera.release()
             self._camera = None
             self._camera_id = None
-        return rval
+        return status
 
     def preview(self):
         if self._camera is None:
@@ -50,14 +50,19 @@ class Uti260b:
         cv2.namedWindow("preview", flags=cv2.WINDOW_NORMAL)
 
         if self._camera.isOpened():
-            rval, frame = self._camera.read()
+            status, frame = self._camera.read()
         else:
-            rval = False
+            status = False
+            frame = None
             print("Couldn't read from camera")
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         writer = None
 
-        while rval:
+        print("Preview started")
+        print("Press C to capture a snapshot")
+        print("Press R to start and stop recording")
+
+        while status:
             cv2.imshow("preview", frame)
             rval, frame = self._camera.read()
             key = cv2.waitKey(WAIT_KEY_DELAY)
