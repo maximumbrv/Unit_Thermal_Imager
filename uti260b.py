@@ -14,6 +14,7 @@ class Uti260b:
     def __init__(self):
         self._camera = None
         self._camera_id = None
+        self.recording = False
 
     def connect(self):
         success = False
@@ -53,7 +54,6 @@ class Uti260b:
         else:
             rval = False
             print("Couldn't read from camera")
-        recording = False
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         writer = None
 
@@ -71,19 +71,19 @@ class Uti260b:
                 print('Image captured')
 
             if key in [ord('r'), ord('R'), ord('к'), ord('К')]:
-                if not recording:
+                if not self.recording:
                     video_name = self._get_filename_from_time('.mp4', VIDEO_FOLDER)
                     writer = cv2.VideoWriter(video_name, fourcc, CAMERA_FPS, RESOLUTION[::-1])
-                    recording = True
+                    self.recording = True
                     print('Recording started')
                 elif writer is None:
                     print('Recording not started')
                 else:
-                    recording = False
+                    self.recording = False
                     writer.release()
                     print('Recording stopped')
 
-            if recording:
+            if self.recording:
                 writer.write(frame)
 
         cv2.destroyWindow("preview")
